@@ -1,7 +1,7 @@
-
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createTransaction, findTransactionsByAccountId } from './transactions.service';
 import { CreateTransactionInput } from './transactions.service';
+import { createEvent } from '../events/events.service';
 
 export async function createTransactionHandler(
   request: FastifyRequest<{ Body: CreateTransactionInput; Params: { accountId: string } }>,
@@ -15,6 +15,16 @@ export async function createTransactionHandler(
       ...body,
       account_id: accountId,
       created_by: request.user.id,
+    });
+
+    await createEvent({
+      aggregate_type: 'transaction',
+      aggregate_id: createdTransaction.id,
+      event_type: createdTransaction.type === 'DEPOSIT' ? 'DepositCreated' : 'WithdrawalCreated',
+      payload: {
+        account_id: createdTransaction.account_id,
+        amount: createdTransaction.amount,
+      },
     });
 
     return reply.code(201).send(createdTransaction);

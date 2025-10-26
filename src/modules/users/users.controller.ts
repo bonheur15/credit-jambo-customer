@@ -1,8 +1,10 @@
+
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createUser, findUserByEmail } from './users.service';
 import { CreateUserInput } from './users.service';
 import { hash, verify } from '../../utils/hash';
 import { SignJWT } from 'jose';
+import { createEvent } from '../events/events.service';
 
 export async function registerUserHandler(
   request: FastifyRequest<{ Body: CreateUserInput }>,
@@ -25,6 +27,16 @@ export async function registerUserHandler(
       ...body,
       password_hash: passwordHash,
       salt,
+    });
+
+    await createEvent({
+      aggregate_type: 'user',
+      aggregate_id: createdUser.id,
+      event_type: 'UserRegistered',
+      payload: {
+        email: createdUser.email,
+        name: createdUser.name,
+      },
     });
 
     return reply.code(201).send(createdUser);

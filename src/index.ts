@@ -58,7 +58,10 @@ server.register(devicesRoutes, { prefix: '/api/devices' });
 import { transactionsRoutes } from './modules/transactions/transactions.routes';
 
 server.register(accountsRoutes, { prefix: '/api/accounts' });
+import { deviceVerificationsRoutes } from './modules/device_verifications/device_verifications.routes';
+
 server.register(transactionsRoutes, { prefix: '/api/accounts' });
+server.register(deviceVerificationsRoutes, { prefix: '/api/device-verifications' });
 
 server.get('/', async (request, reply) => {
   return { hello: 'world' };

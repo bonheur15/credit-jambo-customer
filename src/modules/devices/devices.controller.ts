@@ -1,7 +1,7 @@
-
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createDevice, findDeviceByDeviceId } from './devices.service';
 import { CreateDeviceInput } from './devices.service';
+import { createEvent } from '../events/events.service';
 
 export async function registerDeviceHandler(
   request: FastifyRequest<{ Body: CreateDeviceInput }>,
@@ -21,6 +21,16 @@ export async function registerDeviceHandler(
     const createdDevice = await createDevice({
       ...body,
       user_id: request.user.id,
+    });
+
+    await createEvent({
+      aggregate_type: 'device',
+      aggregate_id: createdDevice.id,
+      event_type: 'DeviceRegistered',
+      payload: {
+        device_id: createdDevice.device_id,
+        user_id: createdDevice.user_id,
+      },
     });
 
     return reply.code(201).send(createdDevice);
