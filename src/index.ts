@@ -25,6 +25,8 @@ server.register(swagger, {
   },
 });
 
+import { usersRoutes } from './modules/users/users.routes';
+
 server.register(swaggerUi, {
   routePrefix: '/documentation',
   uiConfig: {
@@ -42,6 +44,8 @@ server.register(swaggerUi, {
   staticCSP: true,
   transformStaticCSP: (header) => header,
 });
+
+server.register(usersRoutes, { prefix: '/api/users' });
 
 server.get('/', async (request, reply) => {
   return { hello: 'world' };
