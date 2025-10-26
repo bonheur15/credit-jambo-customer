@@ -2,11 +2,12 @@ import { FastifyInstance } from 'fastify';
 import { registerUserHandler, loginHandler } from './users.controller';
 import { createInsertSchema } from 'drizzle-zod';
 import { users } from './users.schema';
+import { z } from 'zod';
 
 const insertUserSchema = createInsertSchema(users);
 const loginSchema = createInsertSchema(users, {
-  email: (schema) => schema.email.email(),
-  password_hash: (schema) => schema.password_hash.min(8),
+  email: z.string().email(),
+  password_hash: z.string().min(8),
 });
 
 export async function usersRoutes(server: FastifyInstance) {
