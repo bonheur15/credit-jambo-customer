@@ -33,7 +33,12 @@ export async function usersRoutes(server: FastifyInstance) {
               id: { type: "string", format: "uuid" },
               email: { type: "string", format: "email" },
               name: { type: "string" },
-              created_at: { type: "string", format: "date-time" },
+            },
+            example: {
+              id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              email: "user@example.com",
+              name: "John Doe",
+              created_at: "2023-10-27T10:00:00.000Z",
             },
           },
           400: {

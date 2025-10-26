@@ -4,7 +4,7 @@ import { createAccountHandler, getAccountsHandler } from './accounts.controller'
 import { createInsertSchema } from 'drizzle-zod';
 import { accounts } from './accounts.schema';
 import { z } from 'zod';
-import { $ref } from '../../schemas';
+
 
 const insertAccountSchema = createInsertSchema(accounts);
 
@@ -16,11 +16,28 @@ export async function accountsRoutes(server: FastifyInstance) {
         summary: 'Create a new account',
         description: 'Creates a new account for a user.',
         tags: ['Accounts'],
-        body: { type: 'object', properties: { account: $ref('accounts') } },
+        body: {
+          type: 'object',
+          properties: {
+            currency: { type: 'string' },
+          },
+        },
         response: {
           201: {
             description: 'Account created successfully',
-            ...$ref('accounts'),
+            type: 'object',
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              user_id: { type: 'string', format: 'uuid' },
+              currency: { type: 'string' },
+              created_at: { type: 'string', format: 'date-time' },
+            },
+            example: {
+              id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+              user_id: 'f1e2d3c4-b5a6-9876-5432-10fedcba9876',
+              currency: 'RWF',
+              created_at: '2023-10-27T10:00:00.000Z',
+            },
           },
           400: {
             description: 'Bad request, validation error',
@@ -55,7 +72,23 @@ export async function accountsRoutes(server: FastifyInstance) {
           200: {
             description: 'A list of accounts',
             type: 'array',
-            items: $ref('accounts'),
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'string', format: 'uuid' },
+                user_id: { type: 'string', format: 'uuid' },
+                currency: { type: 'string' },
+                created_at: { type: 'string', format: 'date-time' },
+              },
+            },
+            example: [
+              {
+                id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+                user_id: 'f1e2d3c4-b5a6-9876-5432-10fedcba9876',
+                currency: 'RWF',
+                created_at: '2023-10-27T10:00:00.000Z',
+              },
+            ],
           },
           500: {
             description: 'Internal server error',

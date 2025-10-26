@@ -1,17 +1,10 @@
 import Fastify from "fastify";
-import {
-  serializerCompiler,
-  validatorCompiler,
-  type ZodTypeProvider,
-} from "fastify-type-provider-zod";
+
 import { schemas } from "./schemas";
 
 const server = Fastify({
-  // logger: true,
-}).withTypeProvider<ZodTypeProvider>();
-
-server.setValidatorCompiler(validatorCompiler);
-server.setSerializerCompiler(serializerCompiler);
+  logger: true,
+});
 
 import { usersRoutes } from "./modules/users/users.routes";
 import swagger from "@fastify/swagger";

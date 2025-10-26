@@ -4,7 +4,7 @@ import { createDeviceVerificationHandler, getDeviceVerificationHandler } from '.
 import { createInsertSchema } from 'drizzle-zod';
 import { deviceVerifications } from './device_verifications.schema';
 import { z } from 'zod';
-import { $ref } from '../../schemas';
+
 
 const insertDeviceVerificationSchema = createInsertSchema(deviceVerifications);
 
@@ -16,11 +16,36 @@ export async function deviceVerificationsRoutes(server: FastifyInstance) {
         summary: 'Create a new device verification request',
         description: 'Initiates a new verification process for a device.',
         tags: ['Device Verifications'],
-        body: { type: 'object', properties: { deviceVerification: $ref('deviceVerifications') } },
+        body: {
+          type: 'object',
+          properties: {
+            device_id: { type: 'string', format: 'uuid' },
+            admin_id: { type: 'string', format: 'uuid' },
+            status: { type: 'string', enum: ['PENDING', 'VERIFIED', 'REJECTED'] },
+            note: { type: 'string' },
+          },
+          required: ['device_id', 'status'],
+        },
         response: {
           201: {
             description: 'Device verification request created successfully',
-            ...$ref('deviceVerifications'),
+            type: 'object',
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              device_id: { type: 'string', format: 'uuid' },
+              admin_id: { type: 'string', format: 'uuid' },
+              status: { type: 'string', enum: ['PENDING', 'VERIFIED', 'REJECTED'] },
+              created_at: { type: 'string', format: 'date-time' },
+              note: { type: 'string' },
+            },
+            example: {
+              id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+              device_id: 'f1e2d3c4-b5a6-9876-5432-10fedcba9876',
+              admin_id: 'g1h2i3j4-k5l6-7890-1234-567890abcdef',
+              status: 'PENDING',
+              created_at: '2023-10-27T10:00:00.000Z',
+              note: 'Initial verification request',
+            },
           },
           400: {
             description: 'Bad request, validation error',
@@ -63,7 +88,23 @@ export async function deviceVerificationsRoutes(server: FastifyInstance) {
         response: {
           200: {
             description: 'Device verification status',
-            ...$ref('deviceVerifications'),
+            type: 'object',
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              device_id: { type: 'string', format: 'uuid' },
+              admin_id: { type: 'string', format: 'uuid' },
+              status: { type: 'string', enum: ['PENDING', 'VERIFIED', 'REJECTED'] },
+              created_at: { type: 'string', format: 'date-time' },
+              note: { type: 'string' },
+            },
+            example: {
+              id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+              device_id: 'f1e2d3c4-b5a6-9876-5432-10fedcba9876',
+              admin_id: 'g1h2i3j4-k5l6-7890-1234-567890abcdef',
+              status: 'VERIFIED',
+              created_at: '2023-10-27T10:00:00.000Z',
+              note: 'Device verified by admin',
+            },
           },
           404: {
             description: 'Device not found',
