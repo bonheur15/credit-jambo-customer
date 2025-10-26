@@ -1,10 +1,13 @@
-
 import { FastifyInstance } from 'fastify';
-import { registerUserHandler } from './users.controller';
+import { registerUserHandler, loginHandler } from './users.controller';
 import { createInsertSchema } from 'drizzle-zod';
 import { users } from './users.schema';
 
 const insertUserSchema = createInsertSchema(users);
+const loginSchema = createInsertSchema(users, {
+  email: (schema) => schema.email.email(),
+  password_hash: (schema) => schema.password_hash.min(8),
+});
 
 export async function usersRoutes(server: FastifyInstance) {
   server.post(
@@ -20,5 +23,25 @@ export async function usersRoutes(server: FastifyInstance) {
       },
     },
     registerUserHandler
+  );
+
+  server.post(
+    '/login',
+    {
+      schema: {
+        summary: 'Login a user',
+        tags: ['Users'],
+        body: loginSchema,
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              jwt: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    loginHandler
   );
 }

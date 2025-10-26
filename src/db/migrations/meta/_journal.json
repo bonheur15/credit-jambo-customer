@@ -8,6 +8,13 @@
       "when": 1761482548386,
       "tag": "0000_far_joystick",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761482710326,
+      "tag": "0001_lyrical_kree",
+      "breakpoints": true
     }
   ]
 }
