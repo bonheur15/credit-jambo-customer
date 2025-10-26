@@ -52,7 +52,13 @@ server.register(authPlugin);
 import { devicesRoutes } from './modules/devices/devices.routes';
 
 server.register(usersRoutes, { prefix: '/api/users' });
+import { accountsRoutes } from './modules/accounts/accounts.routes';
+
 server.register(devicesRoutes, { prefix: '/api/devices' });
+import { transactionsRoutes } from './modules/transactions/transactions.routes';
+
+server.register(accountsRoutes, { prefix: '/api/accounts' });
+server.register(transactionsRoutes, { prefix: '/api/accounts' });
 
 server.get('/', async (request, reply) => {
   return { hello: 'world' };
