@@ -4,9 +4,10 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import { schemas } from "./schemas";
 
 const server = Fastify({
-  logger: true,
+  // logger: true,
 }).withTypeProvider<ZodTypeProvider>();
 
 server.setValidatorCompiler(validatorCompiler);
@@ -27,6 +28,9 @@ server.register(swagger, {
       url: "https://swagger.io",
       description:
         "https://pricey-thumb-392.notion.site/backend-full-documentation-2989e6b42499805792a1ecc93c463609",
+    },
+    components: {
+      schemas,
     },
   },
   transform({ schema, url }) {

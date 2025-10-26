@@ -4,6 +4,7 @@ import { createAccountHandler, getAccountsHandler } from './accounts.controller'
 import { createInsertSchema } from 'drizzle-zod';
 import { accounts } from './accounts.schema';
 import { z } from 'zod';
+import { $ref } from '../../schemas';
 
 const insertAccountSchema = createInsertSchema(accounts);
 
@@ -12,13 +13,32 @@ export async function accountsRoutes(server: FastifyInstance) {
     '/',
     {
       schema: {
-        summary: "Create a new account",
-        description: "Create a new account for a user",
-        tags: ["Accounts"],
-      },
-      body: insertAccountSchema,
-      response: {
-        201: insertAccountSchema,
+        summary: 'Create a new account',
+        description: 'Creates a new account for a user.',
+        tags: ['Accounts'],
+        body: { type: 'object', properties: { account: $ref('accounts') } },
+        response: {
+          201: {
+            description: 'Account created successfully',
+            ...$ref('accounts'),
+          },
+          400: {
+            description: 'Bad request, validation error',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+          500: {
+            description: 'Internal server error',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+        },
       },
     },
     createAccountHandler
@@ -28,12 +48,24 @@ export async function accountsRoutes(server: FastifyInstance) {
     '/',
     {
       schema: {
-        summary: "Get all accounts for a user",
-        description: "Get all accounts for the currently authenticated user",
-        tags: ["Accounts"],
-      },
-      response: {
-        200: z.array(insertAccountSchema),
+        summary: 'Get all accounts',
+        description: 'Retrieves a list of all accounts for the authenticated user.',
+        tags: ['Accounts'],
+        response: {
+          200: {
+            description: 'A list of accounts',
+            type: 'array',
+            items: $ref('accounts'),
+          },
+          500: {
+            description: 'Internal server error',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+        },
       },
     },
     getAccountsHandler
