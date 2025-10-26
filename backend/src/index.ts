@@ -24,7 +24,19 @@ server.register(swagger, {
     },
     components: {
       schemas,
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
     },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   transform({ schema, url }) {
     return {
