@@ -47,7 +47,10 @@ server.register(swaggerUi, {
 
 import { authPlugin } from './plugins/auth';
 
+import { auditPlugin } from './plugins/audit';
+
 server.register(authPlugin);
+server.register(auditPlugin);
 
 import { devicesRoutes } from './modules/devices/devices.routes';
 
