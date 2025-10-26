@@ -47,12 +47,12 @@ server.register(swaggerUi, {
 
 import { authPlugin } from './plugins/auth';
 
-server.register(authPlugin, {
-  prefix: '/api',
-  excludedRoutes: ['/api/users/login', '/api/users'],
-});
+server.register(authPlugin);
+
+import { devicesRoutes } from './modules/devices/devices.routes';
 
 server.register(usersRoutes, { prefix: '/api/users' });
+server.register(devicesRoutes, { prefix: '/api/devices' });
 
 server.get('/', async (request, reply) => {
   return { hello: 'world' };
