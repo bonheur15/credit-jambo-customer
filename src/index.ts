@@ -45,6 +45,13 @@ server.register(swaggerUi, {
   transformStaticCSP: (header) => header,
 });
 
+import { authPlugin } from './plugins/auth';
+
+server.register(authPlugin, {
+  prefix: '/api',
+  excludedRoutes: ['/api/users/login', '/api/users'],
+});
+
 server.register(usersRoutes, { prefix: '/api/users' });
 
 server.get('/', async (request, reply) => {
