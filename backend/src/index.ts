@@ -1,10 +1,9 @@
-
-import Fastify from 'fastify';
+import Fastify from "fastify";
 import {
   serializerCompiler,
   validatorCompiler,
-  ZodTypeProvider,
-} from 'fastify-type-provider-zod';
+  type ZodTypeProvider,
+} from "fastify-type-provider-zod";
 
 const server = Fastify({
   logger: true,
@@ -13,38 +12,79 @@ const server = Fastify({
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);
 
-import { usersRoutes } from './modules/users/users.routes';
+import { usersRoutes } from "./modules/users/users.routes";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
 
+server.register(swagger, {
+  openapi: {
+    info: {
+      title: "Credit Jambo Customer API",
+      description: "API for Credit Jambo Customer Backend",
+      version: "1.0.0",
+    },
+    externalDocs: {
+      url: "https://swagger.io",
+      description:
+        "https://pricey-thumb-392.notion.site/backend-full-documentation-2989e6b42499805792a1ecc93c463609",
+    },
+  },
+  transform({ schema, url }) {
+    return {
+      schema: schema,
+      url: url,
+    };
+  },
+});
 
+server.register(swaggerUi, {
+  routePrefix: "/documentation",
+  uiConfig: {
+    docExpansion: "full",
+    deepLinking: false,
+  },
+  uiHooks: {
+    onRequest: function (request, reply, next) {
+      next();
+    },
+    preHandler: function (request, reply, next) {
+      next();
+    },
+  },
+  staticCSP: true,
+  transformStaticCSP: (header) => header,
+});
 
-import { authPlugin } from './plugins/auth';
+import { authPlugin } from "./plugins/auth";
 
-import { auditPlugin } from './plugins/audit';
+import { auditPlugin } from "./plugins/audit";
 
 server.register(authPlugin);
 server.register(auditPlugin);
 
-import { devicesRoutes } from './modules/devices/devices.routes';
+import { devicesRoutes } from "./modules/devices/devices.routes";
 
-server.register(usersRoutes, { prefix: '/api/users' });
-import { accountsRoutes } from './modules/accounts/accounts.routes';
+server.register(usersRoutes, { prefix: "/api/users" });
+import { accountsRoutes } from "./modules/accounts/accounts.routes";
 
-server.register(devicesRoutes, { prefix: '/api/devices' });
-import { transactionsRoutes } from './modules/transactions/transactions.routes';
+server.register(devicesRoutes, { prefix: "/api/devices" });
+import { transactionsRoutes } from "./modules/transactions/transactions.routes";
 
-server.register(accountsRoutes, { prefix: '/api/accounts' });
-import { deviceVerificationsRoutes } from './modules/device_verifications/device_verifications.routes';
+server.register(accountsRoutes, { prefix: "/api/accounts" });
+import { deviceVerificationsRoutes } from "./modules/device_verifications/device_verifications.routes";
 
-server.register(transactionsRoutes, { prefix: '/api/accounts' });
-server.register(deviceVerificationsRoutes, { prefix: '/api/device-verifications' });
+server.register(transactionsRoutes, { prefix: "/api/accounts" });
+server.register(deviceVerificationsRoutes, {
+  prefix: "/api/device-verifications",
+});
 
-server.get('/', async (request, reply) => {
-  return { hello: 'world' };
+server.get("/", async (request, reply) => {
+  return { hello: "world" };
 });
 
 const start = async () => {
   try {
-    await server.listen({ port: 4000, host: '0.0.0.0' });
+    await server.listen({ port: 4000, host: "0.0.0.0" });
   } catch (err) {
     server.log.error(err);
     process.exit(1);

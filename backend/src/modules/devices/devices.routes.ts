@@ -11,12 +11,13 @@ export async function devicesRoutes(server: FastifyInstance) {
     '/',
     {
       schema: {
-        summary: 'Register a new device',
-        tags: ['Devices'],
-        body: insertDeviceSchema,
-        response: {
-          201: insertDeviceSchema,
-        },
+        summary: "Register a new device",
+        description: "Register a new device for a user",
+        tags: ["Devices"],
+      },
+      body: insertDeviceSchema,
+      response: {
+        201: insertDeviceSchema,
       },
     },
     registerDeviceHandler

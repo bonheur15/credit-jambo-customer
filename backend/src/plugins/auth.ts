@@ -23,7 +23,8 @@ async function auth(server: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       if (
         request.url.startsWith("/api/users/login") ||
-        request.url.startsWith("/api/users")
+        request.url.startsWith("/api/users") ||
+        request.url.startsWith("/documentation")
       ) {
         return;
       }
