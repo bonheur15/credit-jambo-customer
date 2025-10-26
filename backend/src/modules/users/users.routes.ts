@@ -14,13 +14,9 @@ export async function usersRoutes(server: FastifyInstance) {
   server.post(
     '/',
     {
-      schema: {
-        summary: 'Create a new user',
-        tags: ['Users'],
-        body: insertUserSchema,
-        response: {
-          201: insertUserSchema,
-        },
+      body: insertUserSchema,
+      response: {
+        201: insertUserSchema,
       },
     },
     registerUserHandler
@@ -29,18 +25,11 @@ export async function usersRoutes(server: FastifyInstance) {
   server.post(
     '/login',
     {
-      schema: {
-        summary: 'Login a user',
-        tags: ['Users'],
-        body: loginSchema,
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              jwt: { type: 'string' },
-            },
-          },
-        },
+      body: loginSchema,
+      response: {
+        200: z.object({
+          jwt: z.string(),
+        }),
       },
     },
     loginHandler

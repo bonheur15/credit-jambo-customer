@@ -1,49 +1,21 @@
 
 import Fastify from 'fastify';
-import swagger from '@fastify/swagger';
-import swaggerUi from '@fastify/swagger-ui';
+import {
+  serializerCompiler,
+  validatorCompiler,
+  ZodTypeProvider,
+} from 'fastify-type-provider-zod';
 
 const server = Fastify({
   logger: true,
-});
+}).withTypeProvider<ZodTypeProvider>();
 
-server.register(swagger, {
-  swagger: {
-    info: {
-      title: 'Credit Jambo Customer API',
-      description: 'API for Credit Jambo Customer Backend',
-      version: '1.0.0',
-    },
-    externalDocs: {
-      url: 'https://swagger.io',
-      description: 'Find more info here',
-    },
-    host: 'localhost:4000',
-    schemes: ['http'],
-    consumes: ['application/json'],
-    produces: ['application/json'],
-  },
-});
+server.setValidatorCompiler(validatorCompiler);
+server.setSerializerCompiler(serializerCompiler);
 
 import { usersRoutes } from './modules/users/users.routes';
 
-server.register(swaggerUi, {
-  routePrefix: '/documentation',
-  uiConfig: {
-    docExpansion: 'full',
-    deepLinking: false,
-  },
-  uiHooks: {
-    onRequest: function (request, reply, next) {
-      next();
-    },
-    preHandler: function (request, reply, next) {
-      next();
-    },
-  },
-  staticCSP: true,
-  transformStaticCSP: (header) => header,
-});
+
 
 import { authPlugin } from './plugins/auth';
 
