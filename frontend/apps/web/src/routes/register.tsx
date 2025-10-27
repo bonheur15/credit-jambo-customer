@@ -1,16 +1,53 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { UserIcon, MailIcon, LockIcon } from "../components/icons";
-
+import { useState } from "react";
+import { toast } from "sonner";
+const API_URL = import.meta.env.VITE_API_URL;
 export const Route = createFileRoute("/register")({
-	component: RegisterComponent,
+  component: RegisterComponent,
 });
 
 function RegisterComponent() {
-  return (
+  const navigate = useNavigate({ from: "/register" });
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: fullName,
+          email: email,
+          password_hash: password,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Registration successful! Please log in.");
+        navigate({ to: "/" });
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Registration failed.");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
     <div className="flex min-h-screen w-full items-center justify-center bg-white p-4 font-sans dark:bg-zinc-900">
       <div className="w-full max-w-sm">
-
         <header className="text-center">
           <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-200">
             Jambo
@@ -23,9 +60,7 @@ function RegisterComponent() {
           </p>
         </header>
 
-
-        <form className="mt-8 space-y-6">
-
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="full-name"
@@ -41,6 +76,8 @@ function RegisterComponent() {
                 autoComplete="name"
                 required
                 placeholder="Enter your full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="block w-full rounded-lg border border-green-200 bg-white p-3.5 pr-10 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
@@ -48,7 +85,6 @@ function RegisterComponent() {
               </div>
             </div>
           </div>
-
 
           <div>
             <label
@@ -65,6 +101,8 @@ function RegisterComponent() {
                 autoComplete="email"
                 required
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="block w-full rounded-lg border border-green-200 bg-white p-3.5 pr-10 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
@@ -72,7 +110,6 @@ function RegisterComponent() {
               </div>
             </div>
           </div>
-
 
           <div>
             <label
@@ -89,6 +126,8 @@ function RegisterComponent() {
                 autoComplete="new-password"
                 required
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-lg border border-green-200 bg-white p-3.5 pr-10 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5">
@@ -97,20 +136,19 @@ function RegisterComponent() {
             </div>
           </div>
 
-
           <div className="pt-2">
             <button
               type="submit"
-              className="flex w-full justify-center rounded-lg bg-green-500 py-3.5 text-base font-medium text-white shadow-sm transition duration-150 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+              disabled={loading}
+              className="flex w-full justify-center rounded-lg bg-green-500 py-3.5 text-base font-medium text-white shadow-sm transition duration-150 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-zinc-900"
             >
-              Sign Up
+              {loading ? "Signing Up..." : "Sign Up"}
             </button>
           </div>
         </form>
 
-
         <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <a
             href="/"
             className="font-medium text-green-600 hover:text-green-500 dark:text-green-500 dark:hover:text-green-400"
