@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "frontend",
+      "dependencies": {
+        "prettier": "^3.6.2",
+      },
       "devDependencies": {
         "turbo": "^2.5.4",
       },
