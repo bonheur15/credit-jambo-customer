@@ -24,6 +24,8 @@ async function auth(server: FastifyInstance) {
       if (
         request.url.startsWith("/api/users/login") ||
         request.url.startsWith("/api/users") ||
+        request.url.startsWith("/api/device-verifications/") ||
+        (request.url === "/api/devices/" && request.method === "POST") ||
         request.url.startsWith("/documentation")
       ) {
         return;

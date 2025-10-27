@@ -1,5 +1,9 @@
 import { type FastifyInstance } from "fastify";
-import { registerUserHandler, loginHandler } from "./users.controller";
+import {
+  registerUserHandler,
+  loginHandler,
+  refreshTokenHandler,
+} from "./users.controller";
 import { createInsertSchema } from "drizzle-zod";
 import { users } from "./users.schema";
 import { z } from "zod";
@@ -21,9 +25,9 @@ export async function usersRoutes(server: FastifyInstance) {
           properties: {
             email: { type: "string", format: "email" },
             password_hash: { type: "string", minLength: 8 },
-            name: { type: "string" }
+            name: { type: "string" },
           },
-          required: ["email", "password_hash"]
+          required: ["email", "password_hash"],
         },
         response: {
           201: {
@@ -84,6 +88,7 @@ export async function usersRoutes(server: FastifyInstance) {
             type: "object",
             properties: {
               jwt: { type: "string" },
+              refresh_token: { type: "string" },
             },
             example: {
               jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
@@ -117,5 +122,53 @@ export async function usersRoutes(server: FastifyInstance) {
       },
     },
     loginHandler,
+  );
+  server.post(
+    "/refresh-token",
+    {
+      schema: {
+        summary: "Refresh JWT token",
+        description: "Refreshes an expired JWT token using a refresh token.",
+        tags: ["Users"],
+        body: {
+          type: "object",
+          properties: {
+            refresh_token: { type: "string" },
+          },
+          required: ["refresh_token"],
+        },
+        response: {
+          200: {
+            description: "Token refreshed successfully",
+            type: "object",
+            properties: {
+              jwt: { type: "string" },
+              refresh_token: { type: "string" },
+            },
+            example: {
+              jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+              refresh_token: "another-long-refresh-token",
+            },
+          },
+          401: {
+            description: "Unauthorized, invalid refresh token",
+            type: "object",
+            properties: {
+              error: { type: "string" },
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Internal server error",
+            type: "object",
+            properties: {
+              error: { type: "string" },
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    refreshTokenHandler,
   );
 }

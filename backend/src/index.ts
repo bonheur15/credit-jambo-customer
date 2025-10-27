@@ -3,7 +3,7 @@ import Fastify from "fastify";
 import { schemas } from "./schemas";
 
 const server = Fastify({
-  logger: true,
+  // logger: true,
 });
 
 import { usersRoutes } from "./modules/users/users.routes";

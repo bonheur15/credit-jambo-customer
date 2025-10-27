@@ -7,7 +7,11 @@ export async function createDeviceVerificationHandler(
   request: FastifyRequest<{ Body: CreateDeviceVerificationInput }>,
   reply: FastifyReply
 ) {
-  const body = request.body;
+  if (request.user.role !== "admin") {
+    return reply.code(403).send({
+      message: "Forbidden: Only admins can verify devices",
+    });
+  }
 
   try {
     const createdDeviceVerification = await createDeviceVerification({

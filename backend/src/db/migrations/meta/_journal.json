@@ -57,6 +57,20 @@
       "when": 1761482923146,
       "tag": "0007_common_steve_rogers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1761549834784,
+      "tag": "0008_lush_bullseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1761549907687,
+      "tag": "0009_real_maginty",
+      "breakpoints": true
     }
   ]
 }

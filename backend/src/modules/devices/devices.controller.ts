@@ -20,7 +20,7 @@ export async function registerDeviceHandler(
 
     const createdDevice = await createDevice({
       ...body,
-      user_id: request.user.id,
+      user_id: body.user_id,
     });
 
     if (!createdDevice) {

@@ -1,6 +1,6 @@
 
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createAccount, findAccountsByUserId } from './accounts.service';
+import { createAccount, findAccountsByUserId, getAccountBalance } from './accounts.service';
 import { CreateAccountInput } from './accounts.service';
 
 export async function createAccountHandler(
@@ -29,6 +29,28 @@ export async function getAccountsHandler(
   try {
     const accounts = await findAccountsByUserId(request.user.id);
     return reply.code(200).send(accounts);
+  } catch (e) {
+    console.error(e);
+    return reply.code(500).send(e);
+  }
+}
+
+export async function getAccountBalanceHandler(
+  request: FastifyRequest<{ Params: { accountId: string } }>,
+  reply: FastifyReply
+) {
+  const { accountId } = request.params;
+
+  try {
+    const balance = await getAccountBalance(accountId);
+
+    if (!balance) {
+      return reply.code(404).send({
+        message: "Account not found or balance could not be retrieved",
+      });
+    }
+
+    return reply.code(200).send(balance);
   } catch (e) {
     console.error(e);
     return reply.code(500).send(e);

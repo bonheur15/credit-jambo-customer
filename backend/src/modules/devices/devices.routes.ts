@@ -20,8 +20,9 @@ export async function devicesRoutes(server: FastifyInstance) {
             device_id: { type: "string" },
             device_meta: { type: "object" },
             created_by: { type: "string" },
+            user_id: { type: "string", format: "uuid" },
           },
-          required: ["device_id"],
+          required: ["device_id", "user_id"],
         },
         response: {
           201: {
