@@ -1,11 +1,11 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
-import { createDevice, findDeviceByDeviceId } from './devices.service';
-import { CreateDeviceInput } from './devices.service';
-import { createEvent } from '../events/events.service';
+import { FastifyRequest, FastifyReply } from "fastify";
+import { createDevice, findDeviceByDeviceId } from "./devices.service";
+import { CreateDeviceInput } from "./devices.service";
+import { createEvent } from "../events/events.service";
 
 export async function registerDeviceHandler(
   request: FastifyRequest<{ Body: CreateDeviceInput }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const body = request.body;
 
@@ -14,7 +14,7 @@ export async function registerDeviceHandler(
 
     if (device) {
       return reply.code(409).send({
-        message: 'Device already exists',
+        message: "Device already exists",
       });
     }
 
@@ -23,10 +23,15 @@ export async function registerDeviceHandler(
       user_id: request.user.id,
     });
 
+    if (!createdDevice) {
+      return reply.code(500).send({
+        message: "Failed to create device",
+      });
+    }
     await createEvent({
-      aggregate_type: 'device',
+      aggregate_type: "device",
       aggregate_id: createdDevice.id,
-      event_type: 'DeviceRegistered',
+      event_type: "DeviceRegistered",
       payload: {
         device_id: createdDevice.device_id,
         user_id: createdDevice.user_id,
