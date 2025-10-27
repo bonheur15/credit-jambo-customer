@@ -19,25 +19,86 @@ function RegisterComponent() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: fullName,
-          email: email,
-          password_hash: password,
-        }),
-      });
+      // 1. Register user
+      const registerResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}users`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: fullName,
+            email: email,
+            password_hash: password,
+          }),
+        }
+      );
 
-      if (response.ok) {
-        toast.success("Registration successful! Please log in.");
-        navigate({ to: "/" });
-      } else {
-        const errorData = await response.json();
+      if (!registerResponse.ok) {
+        const errorData = await registerResponse.json();
         toast.error(errorData.message || "Registration failed.");
+        return;
       }
+
+      const userData = await registerResponse.json();
+      const userId = userData.id;
+
+      // 2. Login user to get JWT
+      const loginResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}users/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email,
+            password_hash: password,
+          }),
+        }
+      );
+
+      if (!loginResponse.ok) {
+        toast.error("Login after registration failed.");
+        return;
+      }
+
+      const loginData = await loginResponse.json();
+      const jwt = loginData.jwt;
+      localStorage.setItem("jwt", jwt); // Store JWT
+
+      // 3. Register device
+      const deviceId = crypto.randomUUID();
+      const deviceMeta = {
+        os: navigator.platform,
+        userAgent: navigator.userAgent,
+      };
+
+      const deviceResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}devices`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwt}`,
+          },
+          body: JSON.stringify({
+            device_id: deviceId,
+            device_meta: deviceMeta,
+            created_by: "client",
+            user_id: userId,
+          }),
+        }
+      );
+
+      if (!deviceResponse.ok) {
+        toast.error("Device registration failed.");
+        return;
+      }
+
+      const deviceData = await deviceResponse.json();
+      localStorage.setItem("deviceId", deviceData.id); // Store device ID from response
+
+      // 4. Redirect to device-not-approved
+      toast.success("Registration successful! Please wait for device approval.");
+      navigate({ to: "/device-not-approved" });
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
