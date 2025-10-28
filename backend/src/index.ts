@@ -76,6 +76,9 @@ import { auditPlugin } from "./plugins/audit";
 server.register(authPlugin);
 server.register(auditPlugin);
 
+import errorHandler from './plugins/errorHandler';
+server.register(errorHandler);
+
 import { devicesRoutes } from "./modules/devices/devices.routes";
 
 server.register(usersRoutes, { prefix: "/api/users" });

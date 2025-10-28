@@ -1,7 +1,7 @@
-
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createAccount, findAccountsByUserId, getAccountBalance } from './accounts.service';
 import { CreateAccountInput } from './accounts.service';
+import { NotFoundError } from '../../utils/errors';
 
 export async function createAccountHandler(
   request: FastifyRequest<{ Body: CreateAccountInput }>,
@@ -9,30 +9,20 @@ export async function createAccountHandler(
 ) {
   const body = request.body;
 
-  try {
-    const createdAccount = await createAccount({
-      ...body,
-      user_id: request.user.id,
-    });
+  const createdAccount = await createAccount({
+    ...body,
+    user_id: request.user.id,
+  });
 
-    return reply.code(201).send(createdAccount);
-  } catch (e) {
-    console.error(e);
-    return reply.code(500).send(e);
-  }
+  return reply.code(201).send(createdAccount);
 }
 
 export async function getAccountsHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  try {
-    const accounts = await findAccountsByUserId(request.user.id);
-    return reply.code(200).send(accounts);
-  } catch (e) {
-    console.error(e);
-    return reply.code(500).send(e);
-  }
+  const accounts = await findAccountsByUserId(request.user.id);
+  return reply.code(200).send(accounts);
 }
 
 export async function getAccountBalanceHandler(
@@ -41,18 +31,11 @@ export async function getAccountBalanceHandler(
 ) {
   const { accountId } = request.params;
 
-  try {
-    const balance = await getAccountBalance(accountId);
+  const balance = await getAccountBalance(accountId);
 
-    if (!balance) {
-      return reply.code(404).send({
-        message: "Account not found or balance could not be retrieved",
-      });
-    }
-
-    return reply.code(200).send(balance);
-  } catch (e) {
-    console.error(e);
-    return reply.code(500).send(e);
+  if (!balance) {
+    throw new NotFoundError("Account not found or balance could not be retrieved");
   }
+
+  return reply.code(200).send(balance);
 }

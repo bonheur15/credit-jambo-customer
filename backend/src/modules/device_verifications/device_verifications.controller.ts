@@ -1,29 +1,22 @@
-
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { createDeviceVerification, findDeviceVerificationByDeviceId } from './device_verifications.service';
 import { CreateDeviceVerificationInput } from './device_verifications.service';
+import { ForbiddenError } from '../../utils/errors';
 
 export async function createDeviceVerificationHandler(
   request: FastifyRequest<{ Body: CreateDeviceVerificationInput }>,
   reply: FastifyReply
 ) {
   if (request.user.role !== "admin") {
-    return reply.code(403).send({
-      message: "Forbidden: Only admins can verify devices",
-    });
+    throw new ForbiddenError("Only admins can verify devices");
   }
 
-  try {
-    const createdDeviceVerification = await createDeviceVerification({
-      ...body,
-      admin_id: request.user.id,
-    });
+  const createdDeviceVerification = await createDeviceVerification({
+    ...request.body,
+    admin_id: request.user.id,
+  });
 
-    return reply.code(201).send(createdDeviceVerification);
-  } catch (e) {
-    console.error(e);
-    return reply.code(500).send(e);
-  }
+  return reply.code(201).send(createdDeviceVerification);
 }
 
 export async function getDeviceVerificationHandler(
@@ -32,11 +25,6 @@ export async function getDeviceVerificationHandler(
 ) {
   const { deviceId } = request.params;
 
-  try {
-    const deviceVerification = await findDeviceVerificationByDeviceId(deviceId);
-    return reply.code(200).send(deviceVerification);
-  } catch (e) {
-    console.error(e);
-    return reply.code(500).send(e);
-  }
+  const deviceVerification = await findDeviceVerificationByDeviceId(deviceId);
+  return reply.code(200).send(deviceVerification);
 }

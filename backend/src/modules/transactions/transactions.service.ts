@@ -4,6 +4,7 @@ import { transactions } from './transactions.schema';
 import { eq, sql } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { InsufficientFundsError } from '../../utils/errors';
 
 const insertTransactionSchema = createInsertSchema(transactions, {
   amount: z.union([z.string(), z.number()]),
@@ -46,7 +47,7 @@ export async function createTransaction(data: CreateTransactionInput) {
       const withdrawalAmount = parseFloat(transactionData.amount);
 
       if (balance < withdrawalAmount) {
-        throw new Error('Insufficient funds');
+        throw new InsufficientFundsError('Insufficient funds');
       }
       const result = await tx.insert(transactions).values(transactionData).returning();
       return result[0];
