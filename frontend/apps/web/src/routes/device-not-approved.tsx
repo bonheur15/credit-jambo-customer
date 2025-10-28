@@ -13,10 +13,9 @@ function DeviceNotApprovedComponent() {
   const checkDeviceVerification = async () => {
     setLoading(true);
     const deviceId = localStorage.getItem("deviceId");
-    const jwt = localStorage.getItem("jwt");
 
-    if (!deviceId || !jwt) {
-      toast.error("Missing device ID or token. Please register again.");
+    if (!deviceId) {
+      toast.error("Missing device ID, Please register again.");
       navigate({ to: "/register" });
       return;
     }
@@ -24,36 +23,30 @@ function DeviceNotApprovedComponent() {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}device-verifications/${deviceId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        }
       );
-
       if (response.ok) {
         const verificationData = await response.json();
+
         if (verificationData.status === "VERIFIED") {
           toast.success("Device approved!");
-          navigate({ to: "/dashboard" });
+          navigate({ to: "/" });
         } else {
           toast.info(
-            "Device approval is still pending. Please wait and try again."
+            "Device approval is still pending. Please wait and try again.",
           );
         }
       } else if (response.status === 404) {
         toast.info(
-          "Device approval is still pending. Please wait and try again."
+          "Device approval is still pending. Please wait and try again.",
         );
       } else {
         toast.error("Failed to check device verification status.");
       }
     } catch (error) {
       toast.error(
-        "An unexpected error occurred while checking device status."
+        "Device approval is still pending. Please wait and try again. or login to another account",
       );
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -65,8 +58,8 @@ function DeviceNotApprovedComponent() {
           Device Not Approved
         </h1>
         <p className="mt-2 text-base text-zinc-600 dark:text-zinc-400">
-          Your device is not approved to access this application. Please wait for
-          approval and then refresh.
+          Your device is not approved to access this application. Please wait
+          for approval and then refresh.
         </p>
         <button
           onClick={checkDeviceVerification}

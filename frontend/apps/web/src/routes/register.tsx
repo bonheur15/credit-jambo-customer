@@ -30,7 +30,7 @@ function RegisterComponent() {
             email: email,
             password_hash: password,
           }),
-        }
+        },
       );
 
       if (!registerResponse.ok) {
@@ -42,29 +42,7 @@ function RegisterComponent() {
       const userData = await registerResponse.json();
       const userId = userData.id;
 
-      // 2. Login user to get JWT
-      const loginResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}users/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: email,
-            password_hash: password,
-          }),
-        }
-      );
-
-      if (!loginResponse.ok) {
-        toast.error("Login after registration failed.");
-        return;
-      }
-
-      const loginData = await loginResponse.json();
-      const jwt = loginData.jwt;
-      localStorage.setItem("jwt", jwt); // Store JWT
-
-      // 3. Register device
+      // Register device
       const deviceId = crypto.randomUUID();
       const deviceMeta = {
         os: navigator.platform,
@@ -77,7 +55,6 @@ function RegisterComponent() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`,
           },
           body: JSON.stringify({
             device_id: deviceId,
@@ -85,7 +62,7 @@ function RegisterComponent() {
             created_by: "client",
             user_id: userId,
           }),
-        }
+        },
       );
 
       if (!deviceResponse.ok) {
@@ -97,7 +74,9 @@ function RegisterComponent() {
       localStorage.setItem("deviceId", deviceData.id); // Store device ID from response
 
       // 4. Redirect to device-not-approved
-      toast.success("Registration successful! Please wait for device approval.");
+      toast.success(
+        "Registration successful! Please wait for device approval.",
+      );
       navigate({ to: "/device-not-approved" });
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.");
