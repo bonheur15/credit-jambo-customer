@@ -58,7 +58,13 @@ export async function createTransaction(data: CreateTransactionInput) {
   }
 }
 
-export async function findTransactionsByAccountId(accountId: string) {
-  const result = await db.select().from(transactions).where(eq(transactions.account_id, accountId));
+export async function findTransactionsByAccountId(accountId: string, limit?: number) {
+  const query = db.select().from(transactions).where(eq(transactions.account_id, accountId));
+
+  if (limit) {
+    query.limit(limit);
+  }
+
+  const result = await query;
   return result;
 }

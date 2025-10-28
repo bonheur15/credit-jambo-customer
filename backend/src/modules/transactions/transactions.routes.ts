@@ -108,6 +108,15 @@ export async function transactionsRoutes(server: FastifyInstance) {
             },
           },
         },
+        querystring: {
+          type: 'object',
+          properties: {
+            all: {
+              type: 'string',
+              description: 'If set to "true", returns all transactions. Otherwise, returns the last 2 transactions.',
+            },
+          },
+        },
         response: {
           200: {
             description: 'A list of transactions',

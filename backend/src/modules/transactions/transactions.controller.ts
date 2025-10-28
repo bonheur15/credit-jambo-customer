@@ -30,11 +30,14 @@ export async function createTransactionHandler(
 }
 
 export async function getTransactionsHandler(
-  request: FastifyRequest<{ Params: { accountId: string } }>,
+  request: FastifyRequest<{ Params: { accountId: string }; Querystring: { all?: string } }>,
   reply: FastifyReply
 ) {
   const { accountId } = request.params;
+  const { all } = request.query;
 
-  const transactions = await findTransactionsByAccountId(accountId);
+  const limit = all === 'true' ? undefined : 2;
+
+  const transactions = await findTransactionsByAccountId(accountId, limit);
   return reply.code(200).send(transactions);
 }
