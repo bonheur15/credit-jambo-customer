@@ -1,12 +1,16 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { createTransaction, findTransactionsByAccountId } from './transactions.service';
-import { CreateTransactionInput } from './transactions.service';
+import type { CreateTransactionInput } from './transactions.service';
 import { createEvent } from '../events/events.service';
+import { AppError } from '../../utils/errors';
 
 export async function createTransactionHandler(
   request: FastifyRequest<{ Body: CreateTransactionInput; Params: { accountId: string } }>,
   reply: FastifyReply
 ) {
+  if (!request.user) {
+    throw new AppError("Unauthorized", 401);
+  }
   const body = request.body;
   const { accountId } = request.params;
 
@@ -15,6 +19,10 @@ export async function createTransactionHandler(
     account_id: accountId,
     created_by: request.user.id,
   });
+
+  if (!createdTransaction) {
+    throw new AppError("Transaction could not be created", 500);
+  }
 
   await createEvent({
     aggregate_type: 'transaction',

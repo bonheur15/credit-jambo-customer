@@ -30,10 +30,18 @@ export async function findAccountsByUserId(userId: string) {
 
 import { sql } from "drizzle-orm";
 
+type BalanceQueryResult = {
+  [key: string]: unknown;
+  account_id: string;
+  balance: string;
+  currency: string;
+  last_snapshot_at: string | null;
+}
+
 export async function getAccountBalance(
   accountId: string,
 ): Promise<BalanceDTO | undefined> {
-  const result = await db.execute(sql`
+  const result = await db.execute<BalanceQueryResult>(sql`
     WITH latest_snapshot AS (
       SELECT
         abs.balance::numeric as snapshot_balance,
@@ -73,6 +81,9 @@ export async function getAccountBalance(
 
   if (result.length > 0) {
     const row = result[0];
+    if (!row) {
+      return undefined;
+    }
     return {
       account_id: row.account_id,
       balance: parseFloat(row.balance),

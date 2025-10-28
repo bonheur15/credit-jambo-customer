@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyError, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyError, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import { AppError } from '../utils/errors';
 

@@ -1,5 +1,5 @@
 
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { createTransactionHandler, getTransactionsHandler } from './transactions.controller';
 import { createInsertSchema } from 'drizzle-zod';
 import { transactions } from './transactions.schema';

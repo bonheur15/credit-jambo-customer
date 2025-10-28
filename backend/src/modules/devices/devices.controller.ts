@@ -1,6 +1,6 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyRequest, FastifyReply } from "fastify";
 import { createDevice, findDeviceByDeviceId } from "./devices.service";
-import { CreateDeviceInput } from "./devices.service";
+import type { CreateDeviceInput } from "./devices.service";
 import { createEvent } from "../events/events.service";
 import { ConflictError, AppError } from "../../utils/errors";
 

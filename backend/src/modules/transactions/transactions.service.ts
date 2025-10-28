@@ -28,8 +28,8 @@ async function getAccountBalance(accountId: string): Promise<number> {
     )
     SELECT (COALESCE((SELECT balance FROM latest_snapshot),0) + (SELECT delta FROM sum_after)) as balance;
   `;
-  const result = await db.execute(query);
-  if (result.length === 0 || result[0].balance === null) {
+  const result: Array<{ balance: string | null }> = await db.execute(query);
+  if (!result || result.length === 0 || !result[0] || result[0].balance === null) {
     return 0;
   }
   return parseFloat(result[0].balance as string);

@@ -1,14 +1,14 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { createDeviceVerification, findDeviceVerificationByDeviceId } from './device_verifications.service';
-import { CreateDeviceVerificationInput } from './device_verifications.service';
-import { ForbiddenError } from '../../utils/errors';
+import type { CreateDeviceVerificationInput } from './device_verifications.service';
+import { AppError, ForbiddenError } from '../../utils/errors';
 
 export async function createDeviceVerificationHandler(
   request: FastifyRequest<{ Body: CreateDeviceVerificationInput }>,
   reply: FastifyReply
 ) {
-  if (request.user.role !== "admin") {
-    throw new ForbiddenError("Only admins can verify devices");
+  if (!request.user) {
+    throw new AppError("Unauthorized", 401);
   }
 
   const createdDeviceVerification = await createDeviceVerification({

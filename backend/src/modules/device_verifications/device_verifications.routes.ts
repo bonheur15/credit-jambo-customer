@@ -1,5 +1,5 @@
 
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { createDeviceVerificationHandler, getDeviceVerificationHandler } from './device_verifications.controller';
 import { createInsertSchema } from 'drizzle-zod';
 import { deviceVerifications } from './device_verifications.schema';

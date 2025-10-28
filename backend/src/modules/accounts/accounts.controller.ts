@@ -1,12 +1,15 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { createAccount, findAccountsByUserId, getAccountBalance } from './accounts.service';
-import { CreateAccountInput } from './accounts.service';
-import { NotFoundError } from '../../utils/errors';
+import type { CreateAccountInput } from './accounts.service';
+import { AppError, NotFoundError } from '../../utils/errors';
 
 export async function createAccountHandler(
   request: FastifyRequest<{ Body: CreateAccountInput }>,
   reply: FastifyReply
 ) {
+  if (!request.user) {
+    throw new AppError("Unauthorized", 401);
+  }
   const body = request.body;
 
   const createdAccount = await createAccount({
@@ -21,6 +24,9 @@ export async function getAccountsHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
+  if (!request.user) {
+    throw new AppError("Unauthorized", 401);
+  }
   const accounts = await findAccountsByUserId(request.user.id);
   return reply.code(200).send(accounts);
 }

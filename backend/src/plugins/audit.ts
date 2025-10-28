@@ -1,5 +1,5 @@
 
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import { createAuditLog } from '../modules/audit_logs/audit_logs.service';
 

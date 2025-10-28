@@ -11,7 +11,7 @@ declare module "fastify" {
     user: {
       id: string;
       email: string;
-    };
+    } | null;
   }
 }
 
