@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CreditCardIcon, HomeIcon, ListIcon, UserIcon } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
+import { TransactionModal } from "../components/transaction-modal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -41,6 +42,12 @@ function DashboardComponent() {
 	const [balances, setBalances] = React.useState<Record<string, TBalance>>(
 		{}
 	);
+	const [isDepositModalOpen, setIsDepositModalOpen] = React.useState(false);
+	const [isWithdrawModalOpen, setIsWithdrawModalOpen] = React.useState(false);
+
+	const refreshAllData = () => {
+		fetchAccounts();
+	};
 
 	const fetchAccounts = async () => {
 		const token = localStorage.getItem("jwt");
@@ -56,12 +63,12 @@ function DashboardComponent() {
 				},
 			});
 
-			if (response.ok) {
-				const data = await response.json();
-				setAccounts(data);
-				fetchTransactions(data);
-			} else {
-				toast.error("Failed to fetch accounts.");
+							if (response.ok) {
+								const data = await response.json();
+								setAccounts(data);
+								fetchTransactions(data);
+								data.forEach((account: TAccount) => fetchBalance(account.id));
+							} else {				toast.error("Failed to fetch accounts.");
 			}
 		} catch (error) {
 			toast.error("An error occurred while fetching accounts.");
@@ -186,6 +193,36 @@ function DashboardComponent() {
 					>
 						Create New Account
 					</button>
+					<button
+						type="button"
+						onClick={() => setIsDepositModalOpen(true)}
+						className="mt-4 rounded-lg bg-green-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+					>
+						Deposit
+					</button>
+					<button
+						type="button"
+						onClick={() => setIsWithdrawModalOpen(true)}
+						className="mt-4 rounded-lg bg-red-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+					>
+						Withdraw
+					</button>
+
+					<TransactionModal
+						open={isDepositModalOpen}
+						onOpenChange={setIsDepositModalOpen}
+						onTransactionSuccess={refreshAllData}
+						type="DEPOSIT"
+						accounts={accounts}
+					/>
+
+					<TransactionModal
+						open={isWithdrawModalOpen}
+						onOpenChange={setIsWithdrawModalOpen}
+						onTransactionSuccess={refreshAllData}
+						type="WITHDRAWAL"
+						accounts={accounts}
+					/>
 
 					<div className="mt-4 space-y-3">
 						{accounts.map((account) => (
