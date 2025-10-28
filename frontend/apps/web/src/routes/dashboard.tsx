@@ -194,40 +194,71 @@ function DashboardComponent() {
           />
 
           <div className="mt-4 space-y-3">
-            {accounts.map((account) => (
-              <div
-                key={account.id}
-                onClick={() => fetchBalance(account.id)}
-                className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-zinc-800 cursor-pointer"
-              >
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                      Account
-                    </span>
-                    <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
-                      •••• {account.id.slice(-4)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {account.currency} · Created on{" "}
-                    {new Date(account.created_at).toLocaleDateString()}
-                  </p>
-                </div>
+            {accounts.map((account) => {
+              const balance = balances[account.id];
+
+              const getBalanceClasses = () => {
+                if (!balance) {
+                  return "bg-zinc-100 dark:bg-zinc-700";
+                }
+                if (balance.balance === 0) {
+                  return "bg-zinc-200 dark:bg-zinc-800";
+                }
+                if (balance.balance < 200) {
+                  return "bg-yellow-100 dark:bg-yellow-900";
+                }
+                return "bg-zinc-100 dark:bg-zinc-700";
+              };
+
+              const getBalanceTextClasses = () => {
+                if (!balance) {
+                  return "";
+                }
+                if (balance.balance === 0) {
+                  return "text-zinc-500 dark:text-zinc-400";
+                }
+                if (balance.balance < 200) {
+                  return "text-yellow-900 dark:text-yellow-100";
+                }
+                return "text-zinc-900 dark:text-zinc-100";
+              };
+
+              return (
                 <div
-                  className={`flex h-16 w-24 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-700`}
+                  key={account.id}
+                  onClick={() => fetchBalance(account.id)}
+                  className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-zinc-800 cursor-pointer"
                 >
-                  {balances[account.id] ? (
-                    <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                      {balances[account.id].balance}{" "}
-                      {balances[account.id].currency}
-                    </span>
-                  ) : (
-                    <CreditCardIcon className="h-8 w-8 text-zinc-600 dark:text-zinc-300" />
-                  )}
+                  <div className="">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
+                        Account
+                      </span>
+                      <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+                        •••• {account.id.slice(-4)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                      {account.currency} · Created on{" "}
+                      {new Date(account.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div
+                    className={`flex h-16 min-w-24 px-4 items-center justify-center rounded-lg ${getBalanceClasses()}`}
+                  >
+                    {balance ? (
+                      <span
+                        className={`text-lg font-bold ${getBalanceTextClasses()}`}
+                      >
+                        {balance.balance} {balance.currency}
+                      </span>
+                    ) : (
+                      <CreditCardIcon className="h-8 w-8 text-zinc-600 dark:text-zinc-300" />
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="flex gap-5 grid-cols-2 w-full ">
             <button
