@@ -3,6 +3,7 @@ import { CreditCardIcon, HomeIcon, ListIcon, UserIcon } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 import { TransactionModal } from "../components/transaction-modal";
+import { fetchWithAuth } from "../lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -48,18 +49,8 @@ function DashboardComponent() {
   };
 
   const fetchAccounts = async () => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      // Handle missing token, maybe redirect to login
-      return;
-    }
-
     try {
-      const response = await fetch(`${API_URL}accounts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}accounts`);
 
       if (response.ok) {
         const data = await response.json();
@@ -75,21 +66,11 @@ function DashboardComponent() {
   };
 
   const fetchTransactions = async (accounts: TAccount[]) => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      return;
-    }
-
     const allTransactions: TTransaction[] = [];
     for (const account of accounts) {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           `${API_URL}accounts/${account.id}/transactions`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
         );
 
         if (response.ok) {
@@ -110,18 +91,9 @@ function DashboardComponent() {
   };
 
   const createAccount = async () => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      return;
-    }
-
     try {
-      const response = await fetch(`${API_URL}accounts`, {
+      const response = await fetchWithAuth(`${API_URL}accounts`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ currency: "RWF" }),
       });
 
@@ -138,17 +110,10 @@ function DashboardComponent() {
   };
 
   const fetchBalance = async (accountId: string) => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      return;
-    }
-
     try {
-      const response = await fetch(`${API_URL}accounts/${accountId}/balance`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetchWithAuth(
+        `${API_URL}accounts/${accountId}/balance`,
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -169,11 +134,6 @@ function DashboardComponent() {
   };
 
   React.useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      navigate({ to: "/register" });
-      return;
-    }
     fetchAccounts();
   }, []);
   const navigate = useNavigate();

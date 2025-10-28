@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { toast } from "sonner";
 import { ListIcon, HomeIcon, UserIcon } from "lucide-react";
+import { fetchWithAuth } from "../lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -34,18 +35,8 @@ function TransactionsComponent() {
   const [accounts, setAccounts] = React.useState<TAccount[]>([]); // Needed to fetch transactions
 
   const fetchAccounts = async () => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      navigate({ to: "/register" });
-      return;
-    }
-
     try {
-      const response = await fetch(`${API_URL}accounts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetchWithAuth(`${API_URL}accounts`);
 
       if (response.ok) {
         const data = await response.json();
@@ -60,21 +51,11 @@ function TransactionsComponent() {
   };
 
   const fetchTransactions = async (accounts: TAccount[]) => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      return;
-    }
-
     const allTransactions: TTransaction[] = [];
     for (const account of accounts) {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           `${API_URL}accounts/${account.id}/transactions?all=true`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
         );
 
         if (response.ok) {
@@ -100,17 +81,12 @@ function TransactionsComponent() {
   };
 
   React.useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      navigate({ to: "/register" });
-      return;
-    }
     fetchAccounts();
   }, []);
 
   return (
-    <div className="flex min-h-screen max-w-[700px] mx-auto w-full flex-col bg-white font-sans dark:bg-zinc-900">
-      <main className="grow px-6 pb-24 pt-8">
+    <div className="flex min-h-screen max-w-[700px] mx-auto w-full flex-col bg-white font-sans dark:bg-zinc-900 h-fit">
+      <main className="grow px-6 pb-24 pt-8 b">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
             All Transactions Logs
