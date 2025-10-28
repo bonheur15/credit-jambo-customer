@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreditCardIcon, HomeIcon, ListIcon, UserIcon } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
@@ -168,22 +168,40 @@ function DashboardComponent() {
     }
   };
 
-  React.useEffect(() => {
-    fetchAccounts();
-  }, []);
-
-  return (
-    <div className="flex min-h-screen max-w-[700px] mx-auto w-full flex-col bg-white font-sans dark:bg-zinc-900">
-      <main className="grow px-6 pb-24 pt-8">
-        <header className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-            Hello, Ethan!
-          </h1>
-          <button className="text-zinc-500 dark:text-zinc-400">
-            <UserIcon className="h-7 w-7" />
-          </button>
-        </header>
-
+  	React.useEffect(() => {
+  		const token = localStorage.getItem("jwt");
+  		if (!token) {
+  			navigate({ to: "/register" });
+  			return;
+  		}
+  		fetchAccounts();
+  	}, []);
+  	const navigate = useNavigate();
+  
+  	const handleLogout = () => {
+  		localStorage.removeItem("jwt");
+  		localStorage.removeItem("refresh_token");
+  		// Do not remove device_id
+  		toast.success("Logged out successfully.");
+  		navigate({ to: "/register" });
+  	};
+  
+  	return (
+  		<div className="flex min-h-screen max-w-[700px] mx-auto w-full flex-col bg-white font-sans dark:bg-zinc-900">
+  			<main className="grow px-6 pb-24 pt-8">
+  				<header className="flex items-center justify-between">
+  					<h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+  						Hello, Ethan!
+  					</h1>
+  					<div className="flex items-center space-x-4">
+  						<button className="text-zinc-500 dark:text-zinc-400" onClick={handleLogout}>
+  							Logout
+  						</button>
+  						<button className="text-zinc-500 dark:text-zinc-400">
+  							<UserIcon className="h-7 w-7" />
+  						</button>
+  					</div>
+  				</header>
         <section className="mt-8">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             Accounts
