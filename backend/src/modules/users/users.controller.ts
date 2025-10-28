@@ -12,7 +12,12 @@ import { hash, verify } from "../../utils/hash";
 import { SignJWT, jwtVerify } from "jose";
 import { createEvent } from "../events/events.service";
 import { findDeviceVerificationByDeviceId } from "../device_verifications/device_verifications.service";
-import { ConflictError, UnauthorizedError, ForbiddenError, NotFoundError } from "../../utils/errors";
+import {
+  ConflictError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../utils/errors";
 
 export async function registerUserHandler(
   request: FastifyRequest<{ Body: CreateUserInput }>,
@@ -65,8 +70,7 @@ export async function loginHandler(
     throw new UnauthorizedError("Invalid email or password");
   }
 
-  const deviceVerification =
-    await findDeviceVerificationByDeviceId(device_id);
+  const deviceVerification = await findDeviceVerificationByDeviceId(device_id);
 
   if (!deviceVerification || deviceVerification.status !== "VERIFIED") {
     throw new ForbiddenError("Device not verified or not registered");
@@ -86,7 +90,7 @@ export async function loginHandler(
     .setIssuedAt()
     .setIssuer("urn:example:issuer")
     .setAudience("urn:example:audience")
-    .setExpirationTime("15m") // Short-lived access token
+    .setExpirationTime("1m") // Short-lived access token
     .sign(secret);
 
   const expiresAt = new Date();
@@ -146,7 +150,5 @@ export async function refreshTokenHandler(
     expires_at: newExpiresAt,
   });
 
-  return reply
-    .code(200)
-    .send({ jwt: newJwt, refresh_token: newRefreshToken });
+  return reply.code(200).send({ jwt: newJwt, refresh_token: newRefreshToken });
 }

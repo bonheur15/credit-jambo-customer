@@ -59,12 +59,10 @@ export async function findRefreshToken(token: string) {
 export async function revokeRefreshToken(id: string) {
   const result = await db
     .update(refreshTokens)
-    .values({
-      id,
-      created_at: new Date(),
+    .set({
+      revoked_at: new Date(),
     })
     .where(eq(refreshTokens.id, id))
     .returning();
-  // in future i will fix this well
   return result[0];
 }
