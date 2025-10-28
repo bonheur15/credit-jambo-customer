@@ -71,6 +71,13 @@
       "when": 1761549907687,
       "tag": "0009_real_maginty",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1761686303270,
+      "tag": "0010_loving_mister_fear",
+      "breakpoints": true
     }
   ]
 }

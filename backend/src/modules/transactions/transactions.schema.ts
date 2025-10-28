@@ -4,7 +4,7 @@ import { accounts } from '../accounts/accounts.schema';
 
 export const transactions = pgTable('transactions', {
   id: uuid('id').defaultRandom().primaryKey(),
-  account_id: uuid('account_id').references(() => accounts.id),
+  account_id: uuid('account_id').references(() => accounts.id).notNull(),
   type: text('type').notNull(), // 'DEPOSIT' | 'WITHDRAWAL'
   amount: numeric('amount', { precision: 18, scale: 2 }).notNull(),
   reference: text('reference'),
