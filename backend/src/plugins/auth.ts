@@ -17,7 +17,6 @@ declare module "fastify" {
 
 async function auth(server: FastifyInstance) {
   server.decorateRequest("user", null);
-
   server.addHook(
     "preHandler",
     async (request: FastifyRequest, reply: FastifyReply) => {
@@ -25,7 +24,8 @@ async function auth(server: FastifyInstance) {
         request.url.startsWith("/api/users/login") ||
         request.url.startsWith("/api/users") ||
         request.url.startsWith("/api/device-verifications/") ||
-        (request.url === "/api/devices/" && request.method === "POST") ||
+        ((request.url === "/api/devices" || request.url === "/api/devices/") &&
+          request.method === "POST") ||
         request.url.startsWith("/documentation")
       ) {
         return;

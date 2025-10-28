@@ -1,9 +1,14 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 
 import { schemas } from "./schemas";
 
 const server = Fastify({
-  // logger: true,
+  logger: true,
+});
+
+server.register(cors, {
+  origin: ["http://localhost:3000", "http://localhost:3001"],
 });
 
 import { usersRoutes } from "./modules/users/users.routes";
