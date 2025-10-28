@@ -76,8 +76,14 @@ import { auditPlugin } from "./plugins/audit";
 server.register(authPlugin);
 server.register(auditPlugin);
 
-import errorHandler from './plugins/errorHandler';
+import errorHandler from "./plugins/errorHandler";
 server.register(errorHandler);
+
+import rateLimit from "@fastify/rate-limit";
+server.register(rateLimit, {
+  max: 100,
+  timeWindow: "1 minute",
+});
 
 import { devicesRoutes } from "./modules/devices/devices.routes";
 
