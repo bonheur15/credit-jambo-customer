@@ -191,7 +191,7 @@ function DashboardComponent() {
       <main className="grow px-6 pb-24 pt-8">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-            Hello, Ethan!
+            Hello, Customer!
           </h1>
           <div className="flex items-center space-x-4">
             <button
@@ -330,12 +330,19 @@ function DashboardComponent() {
 
       <nav className="fixed bottom-0 left-0 w-full border-t border-zinc-200 bg-white px-6 py-4 dark:border-zinc-700 dark:bg-zinc-900">
         <div className="mx-auto flex max-w-sm justify-around">
-          					<button className="text-zinc-900 dark:text-zinc-100" onClick={() => navigate({ to: "/dashboard" })}>
-          						<HomeIcon className="h-7 w-7" />
-          					</button>
-          					<button className="text-zinc-400 dark:text-zinc-500" onClick={() => navigate({ to: "/transactions" })}>
-          						<ListIcon className="h-7 w-7" />
-          					</button>          <button className="text-zinc-400 dark:text-zinc-500">
+          <button
+            className="text-zinc-900 dark:text-zinc-100"
+            onClick={() => navigate({ to: "/dashboard" })}
+          >
+            <HomeIcon className="h-7 w-7" />
+          </button>
+          <button
+            className="text-zinc-400 dark:text-zinc-500"
+            onClick={() => navigate({ to: "/transactions" })}
+          >
+            <ListIcon className="h-7 w-7" />
+          </button>{" "}
+          <button className="text-zinc-400 dark:text-zinc-500 ">
             <UserIcon className="h-7 w-7" />
           </button>
         </div>
