@@ -96,3 +96,7 @@ The backend API is documented using Swagger. You can access the documentation at
 ## Immutability
 
 The backend follows an append only approach for data persistence. This means that data is never updated or deleted, only new records are inserted. This is achieved by using an event sourcing like pattern where every change is recorded as an event.
+
+## NOTICE
+
+the backend and postgres are exposed to the host network for easy development and testing purpose.
