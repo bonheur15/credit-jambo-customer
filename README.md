@@ -71,6 +71,24 @@ Or you can install and run them manually
     bun dev
     ```
 
+### Database Migrations
+
+Before you can use the application, you need to run the database migrations to set up the required tables.
+
+1.  **Generate migrations (if you change the schema):**
+
+    ```bash
+    cd backend
+    bun db:generate
+    ```
+
+2.  **Apply migrations:**
+
+    ```bash
+    cd backend
+    bun db:migrate
+    ```
+
 ## API Documentation
 
 The backend API is documented using Swagger. You can access the documentation at `http://localhost:4000/documentation` when the backend server is running.
